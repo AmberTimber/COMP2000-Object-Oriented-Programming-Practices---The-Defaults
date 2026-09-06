@@ -104,4 +104,8 @@ public class Node implements Position {
     public boolean getOccupied() {
         return isOccupied;
     }
+
+    public String getNodeID() {
+        return NodeID;
+    }
 }

@@ -8,6 +8,7 @@ public class Moveable extends Vector2 {
     private boolean reachTarget = false;
     private ArrayList<Node> flightPath = new ArrayList<>();
     private int NavigationIndex = 0;
+    private boolean blocking = false;
 
     public Moveable(){}
 
@@ -38,6 +39,10 @@ public class Moveable extends Vector2 {
 
     public ArrayList<Node> getFlightPath() {
         return flightPath;
+    }
+
+    public boolean isBlocked() {
+        return blocking;
     }
 
     // setters
@@ -75,7 +80,7 @@ public class Moveable extends Vector2 {
     public void checkIfReachTarget() {
         if (checkReachXAxis() == true && checkReachYAxis() == true || this.getXPos() == target.getXPos() && this.getYPos() == target.getYPos()) {
             reachTarget = true;
-            System.out.println("Reached pos!");
+            //System.out.println("Reached pos!");
             //changeTarget();
         }
     }
@@ -129,6 +134,10 @@ public class Moveable extends Vector2 {
                     setReachedTarget(false);
                     flightPath.get(NavigationIndex).setOccupied(true); // ensure no other aircrafts can go to the node
                     System.out.println("New target set!");
+                    blocking = false;
+                } else if (flightPath.get(NavigationIndex +1).getOccupied() == true) {
+                    blocking = true;
+                    System.out.println("I am being blocked!!!");
                 }
             }
         }

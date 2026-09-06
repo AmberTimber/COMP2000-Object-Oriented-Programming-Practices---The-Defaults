@@ -28,7 +28,6 @@ public class JPanelVisualizer extends JPanel implements ActionListener {
     private ArrayList<Aircraft> aircraftsOnSite = new ArrayList<>();
     private AirTrafficControl airControl = new AirTrafficControl(aircraftsOnSite,  airportNav,new Vector2(500, 800));
     private Aircraft testFlight;
-    private int count = 0;
 
     // intializes time
     public JPanelVisualizer(JFrame jframePanel) {
@@ -78,7 +77,20 @@ public class JPanelVisualizer extends JPanel implements ActionListener {
         TaxiWayNode2.setRightNode(TaxiWayNode3);
         TaxiWayNode3.setRightNode(TaxiWayNode4);
 
+        // add to airport nav
+        airportNav.add(airfieldNode1);
+        airportNav.add(airfieldNode2);
+        airportNav.add(airfieldNode3);
+        airportNav.add(airfieldNode4);
 
+        airportNav.add(miniRoadNode1);
+        airportNav.add(miniRoadNode2);
+        airportNav.add(miniRoadNode3);
+        airportNav.add(miniRoadNode4);
+
+        airportNav.add(TaxiWayNode1);
+        airportNav.add(TaxiWayNode2);
+        airportNav.add(TaxiWayNode3);
 
         flightPath = airControl.calculateRoute("A4", TaxiWayNode1);
         ArrayList<Node> flightPath2 = airControl.calculateRoute("B1", TaxiWayNode4);
@@ -139,8 +151,18 @@ public class JPanelVisualizer extends JPanel implements ActionListener {
                 Node leftFlyOff = new Node(null, null, null, null, new Vector2(-100, 75), null, "Outside");
                 airControl.ClearAircraftForTakeOff(aircraftsOnSite.get(i), leftFlyOff);
                 aircraftsOnSite.get(i).moveTowards(1);
-            } else if (testFlight.canFly() == false && testFlight.getStatus().equalsIgnoreCase("GROUNDED")) {
+            } else if (aircraftsOnSite.get(i).canFly() == false && aircraftsOnSite.get(i).getStatus().equalsIgnoreCase("GROUNDED")) {
                 aircraftsOnSite.get(i).MoveThroughFlightPath(1);
+            } else if(testFlight.isBlocked() == true) {
+                Node currentNode = null;
+                for (int c = 0; c < aircraftsOnSite.get(i).getFlightPath().size(); i++) {
+                    if (!aircraftsOnSite.get(i).getFlightPath().get(c).getPosition().compareVectors(aircraftsOnSite.get(i).getVector2())) {
+                        currentNode = aircraftsOnSite.get(i).getFlightPath().get(c);
+                    }
+                }
+                String NodeID = currentNode.getNodeID();
+                flightPath = airControl.calculateRoute(NodeID, currentNode);
+                aircraftsOnSite.get(i).setFlightPath(airControl.calculateRoute(NodeID, currentNode));
             } else {
                 aircraftsOnSite.get(i).moveTowards(1); // once in flight, moves to target
             }
