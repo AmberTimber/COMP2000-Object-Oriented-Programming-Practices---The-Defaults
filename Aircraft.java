@@ -8,6 +8,7 @@ public abstract class Aircraft extends Moveable {
 
 
     public Aircraft(String aircraftID, String operator, String model, double fuelLevel, int capacity, String status) {
+        
         this.aircraftID = aircraftID;
         setOperator(operator);
         setModel(model);
@@ -29,6 +30,10 @@ public abstract class Aircraft extends Moveable {
         if (fuelLevel >= 0) {
             this.fuelLevel = fuelLevel;
         }
+    }
+
+    public void setStatus(String newStatus) {
+        status = newStatus;
     }
 
     //getters
@@ -70,5 +75,16 @@ public abstract class Aircraft extends Moveable {
         System.out.println("Fuel Level: " + fuelLevel);
         System.out.println("Capacity: " + capacity);
         System.out.println(getStatus());
+    }
+
+    public boolean canFly() {
+        if (getReachedTarget() == true && getVector2().compareVectors(getFlightPath().get(getFlightPath().size()-1).getPosition()) == true) {
+            Node lastNodeRef = getFlightPath().get(getFlightPath().size()-1);
+            if (lastNodeRef.getNodeTileRepresentation().equalsIgnoreCase("RUNWAY")) {
+                setStatus("Flying");
+                return true;
+            }
+        }
+        return false;
     }
 }

@@ -1,18 +1,34 @@
 
+import java.util.ArrayList;
+import java.util.Vector;
+
 public class Moveable extends Vector2 {
     private float minDist = 0.5f;
     private Vector2 target;
     private boolean reachTarget = false;
+    private ArrayList<Node> flightPath = new ArrayList<>();
+    private int NavigationIndex = 0;
+    private boolean blocking = false;
 
-    public Moveable() {} // goes with just random position
+    public Moveable(){}
+
+    public Moveable(Vector2 position) {
+        setXPos(position.xPos);
+        setYPos(position.yPos);
+    } 
 
     public Moveable (int xpos, int ypos) {
         setXPos(xpos);
         setYPos(ypos);
     }
 
-    // getters
+    public void moveTowards(int speed) { // moves towards target at a speed
+        moveTowardsTargetXAxis(speed);
+        moveTowardsTargetYAxis(speed);
+        checkIfReachTarget();
+    }
 
+    // getters
     public boolean getReachedTarget() {
         return reachTarget;
     }
@@ -21,22 +37,28 @@ public class Moveable extends Vector2 {
         return target;
     }
 
-    public void setReachedTarget(boolean value) {
-        reachTarget = value;
+    public ArrayList<Node> getFlightPath() {
+        return flightPath;
+    }
+
+    public boolean isBlocked() {
+        return blocking;
     }
 
     // setters
+    public void setReachedTarget(boolean value) {
+        reachTarget = value;
+    }
 
     public void setTarget(Vector2 targetPosition) {
         target = targetPosition;
     }
 
-    public void moveTowards(int speed) {
-        moveTowardsTargetXAxis(speed);
-        moveTowardsTargetYAxis(speed);
-        checkIfReachTarget();
+    public void setFlightPath(ArrayList<Node> givenPath) { // set path for things to move to
+        flightPath = givenPath;
     }
 
+    // used for moving the object to a position
     public void moveTowardsTargetXAxis(int speed) {
         if (target.getXPos() > this.getXPos()) {
             this.setXPos(this.getXPos() + speed);
@@ -58,7 +80,7 @@ public class Moveable extends Vector2 {
     public void checkIfReachTarget() {
         if (checkReachXAxis() == true && checkReachYAxis() == true || this.getXPos() == target.getXPos() && this.getYPos() == target.getYPos()) {
             reachTarget = true;
-            System.out.println("Reached pos!");
+            //System.out.println("Reached pos!");
             //changeTarget();
         }
     }
@@ -96,5 +118,28 @@ public class Moveable extends Vector2 {
         target = new Vector2(newXpos, newYpos);
         //System.out.println("New pos is: " + newXpos + " x value, " + newYpos + " y value.");
         reachTarget = false;
+    }
+
+    public void MoveThroughFlightPath(int speed) {
+        if (flightPath != null && !flightPath.isEmpty()) {
+            if (flightPath.size() > NavigationIndex) {
+                setTarget(flightPath.get(NavigationIndex).getPosition().getVector2());
+                moveTowards(speed);
+                checkIfReachTarget();
+    
+                if (getReachedTarget() == true && flightPath.size() > NavigationIndex + 1 && flightPath.get(NavigationIndex +1).getOccupied() == false) {
+                    flightPath.get(NavigationIndex).setOccupied(false); // frees up node for other aircrafts to go to
+                    NavigationIndex++;
+                    setTarget(flightPath.get(NavigationIndex).getPosition().getVector2());
+                    setReachedTarget(false);
+                    flightPath.get(NavigationIndex).setOccupied(true); // ensure no other aircrafts can go to the node
+                    System.out.println("New target set!");
+                    blocking = false;
+                } else if (flightPath.get(NavigationIndex +1).getOccupied() == true) {
+                    blocking = true;
+                    System.out.println("I am being blocked!!!");
+                }
+            }
+        }
     }
 }
