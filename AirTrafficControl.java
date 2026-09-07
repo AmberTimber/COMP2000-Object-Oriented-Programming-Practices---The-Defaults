@@ -40,7 +40,7 @@ public class AirTrafficControl implements drawable {
     public ArrayList<Node> shortestPathNode(ArrayList<Node> givenArray) {
         ArrayList<Node> copy = new ArrayList<>(givenArray);
         Node lastNode = null; // used to remove anything beyond the last waypoint
-        if (givenArray != null && !givenArray.isEmpty()) {
+        if (givenArray != null && !givenArray.isEmpty() && copy != null) {
             lastNode = givenArray.get(givenArray.size() - 1);
             for (int i = 0; i < givenArray.size(); i++) { // starting node to check if future nodes are neighbors
                 int furtherProgression = 0; // used to compare which node is further down
@@ -54,11 +54,13 @@ public class AirTrafficControl implements drawable {
                     
                 }
             }
+         } else {
+                throw new NullPointerException("The path is null, something broke in the path!");
         }
 
         boolean reachedEnd = false; // detect if the waypoint has reached last
         for (int i = 0; i < copy.size(); i++) {
-            if (copy.get(i).equals(lastNode)) {
+            if (copy != null && copy.get(i).equals(lastNode)) {
                 reachedEnd = true;
             } else if (reachedEnd == true) {
                 copy.remove(i); // removes any waypoints beyond the end waypoint
@@ -100,7 +102,7 @@ public class AirTrafficControl implements drawable {
         }
 
         // used to ensure that a plane doesn't get stuck in a loop
-        if (startingNode.rightNode.rightNode != null && !givenArray.contains(startingNode.rightNode.rightNode)) {
+        if (startingNode.rightNode != null && startingNode.rightNode.rightNode != null && !givenArray.contains(startingNode.rightNode.rightNode)) {
             givenArray.add(startingNode);
             return findNode(TargetedNode, givenArray, startingNode.rightNode.rightNode);
         }
@@ -118,16 +120,17 @@ public class AirTrafficControl implements drawable {
     }
 
     // allows air traffic control to decide whether a plane can takeoff or not
-    public void ClearAircraftForTakeOff(Aircraft selectedAircraft, Node otherAirportLocation, ArrayList<Node> airfieldRef) {
-        if (airfieldRef != null && !airfieldRef.isEmpty() && selectedAircraft != null && otherAirportLocation != null) {
+    public void ClearAircraftForTakeOff(Aircraft selectedAircraft, ArrayList<Node> flightOutside, ArrayList<Node> airfieldRef) {
+        if (airfieldRef != null && !airfieldRef.isEmpty() && selectedAircraft != null && flightOutside != null && !flightOutside.isEmpty()) {
             if (selectedAircraft.canFly() == true && selectedAircraft.getChosenToFly()) {
-                selectedAircraft.setTarget(otherAirportLocation.getPosition());
                 selectedAircraft.setReachedTarget(false);
                 System.out.println("Go for takeoff!!!");
                 OccupiedAirfield = true;
                 AirfieldNodeChanger(airfieldRef);
                 flyingAircraft = selectedAircraft;
                 flyingAircraft.setFlying(true);
+                flyingAircraft.resetIndex();
+                flyingAircraft.setFlightPath(flightOutside);
             }
         }
     }
@@ -142,7 +145,7 @@ public class AirTrafficControl implements drawable {
 
     // if aircraft flew off runway, free up runway
     public void checkIfAirfieldIsFree(int width, ArrayList<Node> airfieldRef) {
-        if (flyingAircraft != null && flyingAircraft.getXPos() < 0 || flyingAircraft != null && flyingAircraft.getXPos() > width) {
+        if (flyingAircraft != null && flyingAircraft.getXPos() < 0 || flyingAircraft != null && !flyingAircraft.getCurrentNode().getNodeTileRepresentation().equalsIgnoreCase("RUNWAY")) {
             OccupiedAirfield = false;
             AirfieldNodeChanger(airfieldRef);
             flyingAircraft.setSelected(false);
@@ -163,10 +166,19 @@ public class AirTrafficControl implements drawable {
         }
     }
 
-    public void checkIfPlaneLand() {
-        if (aircraftsInAirport != null && !aircraftsInAirport.isEmpty()) {
-            
+    public void clearForLanding(Aircraft selectedAircraft, Node RUNWAYNode, ArrayList<Node> airfieldRef) {
+        if (airfieldRef != null && !airfieldRef.isEmpty() && selectedAircraft != null && RUNWAYNode != null) {
+            Node aircraftNodeRef = selectedAircraft.getFlightPath().get(selectedAircraft.getFlightPath().size()-1);
+            if (selectedAircraft.getFlying() && selectedAircraft.compareVectors(aircraftNodeRef.getPosition())) {
+                if (OccupiedAirfield == false && flyingAircraft == null) {
+                    OccupiedAirfield = true;
+                    AirfieldNodeChanger(airfieldRef);
+                    flyingAircraft = selectedAircraft;
+                    flyingAircraft.setSelected(true);
+                    System.out.println("attempting to land!");
+                }
+            }
         }
     }
-
 }
+
