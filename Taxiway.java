@@ -1,57 +1,39 @@
 public class Taxiway extends AirportPath {
+    private int capacity; 
+    private double maxSpeedKnots;
+    private Aircraft plane; // The plane currently on the taxiway, if any
 
-  private final int capacity;
-  private final double maxSpeedKnots;
+    public Taxiway(String pathID, double lengthInMeters, int capacity, double maxSpeedKnots){
+        super(pathID, lengthInMeters);
+        this.capacity = capacity;
+        this.maxSpeedKnots = maxSpeedKnots;
+        this.plane = null; // Initially, no plane is on the taxiway
+    } 
 
-  /**
-   * 
-   * @param id:             Taxiway id
-   * @param lengthInMeters: Physical length of the taxiway
-   * @param capacity:       Maximum number of aircraft allowed on the taxiway
-   *                        simultaneously
-   * @param maxSpeedKnots:  Ground speed limit for aircraft transit
-   */
-  public Taxiway(String id, double lengthInMeters, int capacity, double maxSpeedKnots) {
-    super(id, lengthInMeters);
-    this.capacity = capacity;
-    this.maxSpeedKnots = maxSpeedKnots;
-  }
-
-  /**
-   * Overridden from AirportPath abstract class.
-   * "Come up with logic"
-   */
-  @Override
-  public boolean canAcceptAircraft(Aircraft aircraft) {
-    return false; // needs to be modified (come up with logic)
-  }
-
-  /**
-   * 
-   * Adds an aircraft to the taxiway is space allows
-   */
-  public boolean enterTaxiway(Aircraft aircraft) {
-    if (canAcceptAircraft(aircraft)) {
-      // logic
-      return true;
+    //setters
+    public void setCapacity(int capacity){
+      this.capacity = capacity;
     }
-    return false;
-  }
 
-  public Aircraft exitTaxiWay() {
-    // return
-  }
+    public void setMaxSpeedKnots(double maxSpeedKnots){
+      this.maxSpeedKnots = maxSpeedKnots;
+    }
 
-  // change return val
-  public int getCurrentOccupancy() {
-    return 0;
-  }
+    public void setPlane(Aircraft plane) {
+        this.plane = plane;
+    }
 
-  public int getCapacity() {
-    return capacity;
-  }
+    // getters
+    public int getCapacity() {
+      return capacity;
+    }
 
-  public double getMaxSpeedKnots() {
-    return maxSpeedKnots;
-  }
+    public double getMaxSpeedKnots() {
+      return maxSpeedKnots;
+    }
+
+    public Aircraft getPlane() {
+        return plane;
+    }
+    
 }
