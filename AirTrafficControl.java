@@ -6,17 +6,24 @@ import java.awt.Color;
 import java.awt.Graphics;
 
 public class AirTrafficControl implements drawable {
-    private static ArrayList<Aircraft> aircraftsInAirportt;
+    private static ArrayList<Aircraft> aircraftsInAirport;
     private static ArrayList<Node> airportNavigation;
     private Vector2 Location;
     private boolean OccupiedAirfield = false;
+    private static Aircraft flyingAircraft = null;
+
     
     AirTrafficControl(ArrayList<Aircraft> aircraftCount, ArrayList<Node> airportMap, Vector2 buildingLocation) {
-        aircraftsInAirportt = aircraftCount;
+        aircraftsInAirport = aircraftCount;
         airportNavigation = airportMap;
         Location = buildingLocation;
     }
 
+    public boolean getOccupiedAirfield() {
+        return OccupiedAirfield;
+    }
+
+    // creating a flight path for planes
     public ArrayList<Node> calculateRoute(String NodeID, Node StartingNode) {
         ArrayList<Node> path = new ArrayList<>();
         if (NodeID != null && StartingNode != null) {
@@ -113,20 +120,53 @@ public class AirTrafficControl implements drawable {
     // allows air traffic control to decide whether a plane can takeoff or not
     public void ClearAircraftForTakeOff(Aircraft selectedAircraft, Node otherAirportLocation, ArrayList<Node> airfieldRef) {
         if (airfieldRef != null && !airfieldRef.isEmpty() && selectedAircraft != null && otherAirportLocation != null) {
-            if (selectedAircraft.canFly() == true && OccupiedAirfield == true) {
+            if (selectedAircraft.canFly() == true && selectedAircraft.getChosenToFly()) {
                 selectedAircraft.setTarget(otherAirportLocation.getPosition());
                 selectedAircraft.setReachedTarget(false);
                 System.out.println("Go for takeoff!!!");
                 OccupiedAirfield = true;
                 AirfieldNodeChanger(airfieldRef);
+                flyingAircraft = selectedAircraft;
+                flyingAircraft.setFlying(true);
             }
         }
     }
 
+    // changes all airfield nodes to be a value
     public void AirfieldNodeChanger (ArrayList<Node> airfieldRef) {
         if (airfieldRef != null && !airfieldRef.isEmpty())
         for (int i = 0; i < airfieldRef.size(); i++) {
             airfieldRef.get(i).setOccupied(OccupiedAirfield);
         }
     }
+
+    // if aircraft flew off runway, free up runway
+    public void checkIfAirfieldIsFree(int width, ArrayList<Node> airfieldRef) {
+        if (flyingAircraft != null && flyingAircraft.getXPos() < 0 || flyingAircraft != null && flyingAircraft.getXPos() > width) {
+            OccupiedAirfield = false;
+            AirfieldNodeChanger(airfieldRef);
+            flyingAircraft.setSelected(false);
+            flyingAircraft = null;
+        }
+    }
+
+    public void checkIfAAircraftOnAirfield(ArrayList<Node> airfieldRef, Aircraft otherAircraft) {
+        if (aircraftsInAirport != null && !aircraftsInAirport.isEmpty() && airfieldRef != null && !airfieldRef.isEmpty() && otherAircraft != null && flyingAircraft == null) {
+            for (int i = 0; i < aircraftsInAirport.size(); i++) {
+                if (otherAircraft.getCurrentNode() == airfieldRef.get(i)) {
+                    OccupiedAirfield = true;
+                    AirfieldNodeChanger(airfieldRef);
+                    flyingAircraft = otherAircraft;
+                    flyingAircraft.setSelected(true);
+                }
+            }
+        }
+    }
+
+    public void checkIfPlaneLand() {
+        if (aircraftsInAirport != null && !aircraftsInAirport.isEmpty()) {
+            
+        }
+    }
+
 }

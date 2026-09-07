@@ -9,6 +9,8 @@ public class Moveable extends Vector2 {
     private ArrayList<Node> flightPath = new ArrayList<>();
     private int NavigationIndex = 0;
     private boolean blocking = false;
+    private Node currentNode;
+    private boolean selected = false;
 
     public Moveable(){}
 
@@ -45,6 +47,14 @@ public class Moveable extends Vector2 {
         return blocking;
     }
 
+    public Node getCurrentNode() {
+        return currentNode;
+    }
+
+    public Boolean getChosenToFly() {
+        return selected;
+    }
+
     // setters
     public void setReachedTarget(boolean value) {
         reachTarget = value;
@@ -60,6 +70,14 @@ public class Moveable extends Vector2 {
 
     public void setBlocked(boolean value) {
         blocking = value;
+    }
+
+    public void setSelected(boolean value) {
+        selected = value;
+    }
+
+    public void resetIndex() {
+        NavigationIndex = 0;
     }
 
     // used for moving the object to a position
@@ -135,11 +153,20 @@ public class Moveable extends Vector2 {
                     flightPath.get(NavigationIndex).setOccupied(false); // frees up node for other aircrafts to go to
                     NavigationIndex++;
                     setTarget(flightPath.get(NavigationIndex).getPosition().getVector2());
+                    currentNode = flightPath.get(NavigationIndex);
                     setReachedTarget(false);
                     flightPath.get(NavigationIndex).setOccupied(true); // ensure no other aircrafts can go to the node
                     System.out.println("New target set!");
-                } else if (getReachedTarget() == true && flightPath.get(NavigationIndex +1).getOccupied() == true) {
+                } else if (getReachedTarget() == true && flightPath.size() > NavigationIndex + 1 && flightPath.get(NavigationIndex +1).getOccupied() == true && selected == false) {
                     CheckIfNextPathIsBlocked();
+                } // if the aircraft is selected to go on airfield
+                else if (getReachedTarget() == true && flightPath.size() > NavigationIndex + 1 && selected == true) {
+                    NavigationIndex++;
+                    setTarget(flightPath.get(NavigationIndex).getPosition().getVector2());
+                    currentNode = flightPath.get(NavigationIndex);
+                    setReachedTarget(false);
+                    flightPath.get(NavigationIndex).setOccupied(true); // ensure no other aircrafts can go to the node
+                    System.out.println("Going to airfield");
                 }
             }
         }

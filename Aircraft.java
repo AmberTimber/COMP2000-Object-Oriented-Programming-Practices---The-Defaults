@@ -5,6 +5,7 @@ public abstract class Aircraft extends Moveable {
     private double fuelLevel;
     private final int capacity;
     private String status;
+    private boolean flying = false;
 
 
     public Aircraft(String aircraftID, String operator, String model, double fuelLevel, int capacity, String status) {
@@ -36,6 +37,10 @@ public abstract class Aircraft extends Moveable {
         status = newStatus;
     }
 
+    public void setFlying(boolean value) {
+        flying = value;
+    }
+
     //getters
     public String getAircraftID() {
         return aircraftID;
@@ -55,6 +60,10 @@ public abstract class Aircraft extends Moveable {
 
     public int getCapacity() {
         return capacity;
+    }
+
+    public boolean getFlying() {
+        return flying;
     }
 
     public String getStatus() {
