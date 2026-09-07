@@ -9,6 +9,7 @@ public class AirTrafficControl implements drawable {
     private static ArrayList<Aircraft> aircraftsInAirportt;
     private static ArrayList<Node> airportNavigation;
     private Vector2 Location;
+    private boolean OccupiedAirfield = false;
     
     AirTrafficControl(ArrayList<Aircraft> aircraftCount, ArrayList<Node> airportMap, Vector2 buildingLocation) {
         aircraftsInAirportt = aircraftCount;
@@ -37,7 +38,7 @@ public class AirTrafficControl implements drawable {
             for (int i = 0; i < givenArray.size(); i++) { // starting node to check if future nodes are neighbors
                 int furtherProgression = 0; // used to compare which node is further down
                 for (int c = i; c < givenArray.size(); c++) {
-                    if (copy.get(i).checkIfNeighboring(givenArray.get(c))) { // detects whether a neighboring node has a vector2
+                    if (copy.get(i).checkIfNeighboring(givenArray.get(c)) && copy.get(i).getOccupied() == false) { // detects whether a neighboring node has a vector2
                         if (furtherProgression <= c && (i+1) < givenArray.size()) {
                             copy.set(i + 1, givenArray.get(c));
                             furtherProgression = c;
@@ -62,7 +63,7 @@ public class AirTrafficControl implements drawable {
 
     // used to create a navigational arraylist of points on the airport
         public ArrayList<Node> findNode(String TargetedNode, ArrayList<Node> givenArray, Node startingNode) {
-        if (givenArray.contains(startingNode) || startingNode.getOccupied() == true) { // ensure that a node can only be gone on once
+        if (givenArray.contains(startingNode)) { // ensure that a node can only be gone on once
             return null;
         }
 
@@ -90,6 +91,12 @@ public class AirTrafficControl implements drawable {
             givenArray.add(startingNode);
             return findNode(TargetedNode, givenArray, startingNode.rightNode);
         }
+
+        // used to ensure that a plane doesn't get stuck in a loop
+        if (startingNode.rightNode.rightNode != null && !givenArray.contains(startingNode.rightNode.rightNode)) {
+            givenArray.add(startingNode);
+            return findNode(TargetedNode, givenArray, startingNode.rightNode.rightNode);
+        }
         
         return null; // after checking that all other slots are null, meaning this branch isn't it
     }
@@ -104,11 +111,22 @@ public class AirTrafficControl implements drawable {
     }
 
     // allows air traffic control to decide whether a plane can takeoff or not
-    public void ClearAircraftForTakeOff(Aircraft selectedAircraft, Node otherAirportLocation) {
-        if (selectedAircraft.canFly() == true) {
-            selectedAircraft.setTarget(otherAirportLocation.getPosition());
-            selectedAircraft.setReachedTarget(false);
-            System.out.println("Go for takeoff!!!");
+    public void ClearAircraftForTakeOff(Aircraft selectedAircraft, Node otherAirportLocation, ArrayList<Node> airfieldRef) {
+        if (airfieldRef != null && !airfieldRef.isEmpty() && selectedAircraft != null && otherAirportLocation != null) {
+            if (selectedAircraft.canFly() == true && OccupiedAirfield == true) {
+                selectedAircraft.setTarget(otherAirportLocation.getPosition());
+                selectedAircraft.setReachedTarget(false);
+                System.out.println("Go for takeoff!!!");
+                OccupiedAirfield = true;
+                AirfieldNodeChanger(airfieldRef);
+            }
+        }
+    }
+
+    public void AirfieldNodeChanger (ArrayList<Node> airfieldRef) {
+        if (airfieldRef != null && !airfieldRef.isEmpty())
+        for (int i = 0; i < airfieldRef.size(); i++) {
+            airfieldRef.get(i).setOccupied(OccupiedAirfield);
         }
     }
 }

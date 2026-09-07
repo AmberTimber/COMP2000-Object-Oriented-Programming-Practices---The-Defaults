@@ -58,6 +58,10 @@ public class Moveable extends Vector2 {
         flightPath = givenPath;
     }
 
+    public void setBlocked(boolean value) {
+        blocking = value;
+    }
+
     // used for moving the object to a position
     public void moveTowardsTargetXAxis(int speed) {
         if (target.getXPos() > this.getXPos()) {
@@ -120,7 +124,7 @@ public class Moveable extends Vector2 {
         reachTarget = false;
     }
 
-    public void MoveThroughFlightPath(int speed) {
+    public void MoveThroughFlightPath(int speed) { // moves through given node movement
         if (flightPath != null && !flightPath.isEmpty()) {
             if (flightPath.size() > NavigationIndex) {
                 setTarget(flightPath.get(NavigationIndex).getPosition().getVector2());
@@ -134,12 +138,19 @@ public class Moveable extends Vector2 {
                     setReachedTarget(false);
                     flightPath.get(NavigationIndex).setOccupied(true); // ensure no other aircrafts can go to the node
                     System.out.println("New target set!");
-                    blocking = false;
-                } else if (flightPath.get(NavigationIndex +1).getOccupied() == true) {
-                    blocking = true;
-                    System.out.println("I am being blocked!!!");
+                } else if (getReachedTarget() == true && flightPath.get(NavigationIndex +1).getOccupied() == true) {
+                    CheckIfNextPathIsBlocked();
                 }
             }
+        }
+    }
+
+    public void CheckIfNextPathIsBlocked() {
+        if (flightPath != null && !flightPath.isEmpty() && getReachedTarget() == true && flightPath.size()-1 > NavigationIndex + 1 && flightPath.get(NavigationIndex +1).getOccupied() == true) {
+                blocking = true;
+                System.out.println("I am being blocked!!!");
+            } else {
+            blocking = false;
         }
     }
 }

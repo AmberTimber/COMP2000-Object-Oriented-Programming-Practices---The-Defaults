@@ -28,6 +28,7 @@ public class JPanelVisualizer extends JPanel implements ActionListener {
     private ArrayList<Aircraft> aircraftsOnSite = new ArrayList<>();
     private AirTrafficControl airControl = new AirTrafficControl(aircraftsOnSite,  airportNav,new Vector2(500, 800));
     private Aircraft testFlight;
+    private ArrayList<Node> runway = new ArrayList<>();
 
     // intializes time
     public JPanelVisualizer(JFrame jframePanel) {
@@ -92,8 +93,14 @@ public class JPanelVisualizer extends JPanel implements ActionListener {
         airportNav.add(TaxiWayNode2);
         airportNav.add(TaxiWayNode3);
 
+        // marked runway
+        runway.add(airfieldNode1);
+        runway.add(airfieldNode2);
+        runway.add(airfieldNode3);
+        runway.add(airfieldNode4);
+
         flightPath = airControl.calculateRoute("A4", TaxiWayNode1);
-        ArrayList<Node> flightPath2 = airControl.calculateRoute("B1", TaxiWayNode4);
+        ArrayList<Node> flightPath2 = airControl.calculateRoute("A1", TaxiWayNode4);
         
 
         testFlight = new CargoPlane("Test aircraft", "Time the greek", "Hawking404", 30.00, 50,"Fly my minions", 500.00, 250.00);
@@ -147,22 +154,26 @@ public class JPanelVisualizer extends JPanel implements ActionListener {
             } else*/ 
 
             for (int i = 0; i < aircraftsOnSite.size(); i++) {
+                aircraftsOnSite.get(i).CheckIfNextPathIsBlocked(); // checks if the path is blocked or not
             if (aircraftsOnSite.get(i).canFly() == true) {
+                aircraftsOnSite.get(i).getFlightPath().get(aircraftsOnSite.get(i).getFlightPath().size()-1).setOccupied(false);
                 Node leftFlyOff = new Node(null, null, null, null, new Vector2(-100, 75), null, "Outside");
-                airControl.ClearAircraftForTakeOff(aircraftsOnSite.get(i), leftFlyOff);
+                airControl.ClearAircraftForTakeOff(aircraftsOnSite.get(i), leftFlyOff, runway);
                 aircraftsOnSite.get(i).moveTowards(1);
-            } else if (aircraftsOnSite.get(i).canFly() == false && aircraftsOnSite.get(i).getStatus().equalsIgnoreCase("GROUNDED")) {
+            } else if (aircraftsOnSite.get(i).canFly() == false && aircraftsOnSite.get(i).getStatus().equalsIgnoreCase("GROUNDED") && aircraftsOnSite.get(i).isBlocked() == false) {
                 aircraftsOnSite.get(i).MoveThroughFlightPath(1);
-            } else if(testFlight.isBlocked() == true) {
+            } else if(aircraftsOnSite.get(i).isBlocked() == true) { // if a aircraft path is being blocked
                 Node currentNode = null;
-                for (int c = 0; c < aircraftsOnSite.get(i).getFlightPath().size(); i++) {
-                    if (!aircraftsOnSite.get(i).getFlightPath().get(c).getPosition().compareVectors(aircraftsOnSite.get(i).getVector2())) {
-                        currentNode = aircraftsOnSite.get(i).getFlightPath().get(c);
+                for (int c = 0; c < aircraftsOnSite.get(i).getFlightPath().size(); c++) {
+                    if (aircraftsOnSite.get(i).getFlightPath().get(c).getPosition().compareVectors(aircraftsOnSite.get(i).getVector2())) {
+                        currentNode = aircraftsOnSite.get(i).getFlightPath().get(c); // gets its current progress in the navigation
                     }
                 }
-                String NodeID = currentNode.getNodeID();
+                String NodeID = aircraftsOnSite.get(i).getFlightPath().get(aircraftsOnSite.get(i).getFlightPath().size()-1).getNodeID();
+                currentNode.setOccupied(false);
                 flightPath = airControl.calculateRoute(NodeID, currentNode);
-                aircraftsOnSite.get(i).setFlightPath(airControl.calculateRoute(NodeID, currentNode));
+                aircraftsOnSite.get(i).setFlightPath(flightPath);
+                aircraftsOnSite.get(i).setBlocked(false);
             } else {
                 aircraftsOnSite.get(i).moveTowards(1); // once in flight, moves to target
             }
