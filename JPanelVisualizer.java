@@ -59,11 +59,11 @@ public class JPanelVisualizer extends JPanel implements ActionListener {
         Node TaxiWayNode3 = new Node(miniRoadNode3, null, TaxiWayNode2, null, new Vector2(JframeRef.getWidth()/5 * 2 + JframeRef.getWidth()/5, 525), "C3", "TAXIWAY");
         Node TaxiWayNode4 = new Node(miniRoadNode4, null, TaxiWayNode3, null, new Vector2(JframeRef.getWidth()/5 * 3 + JframeRef.getWidth()/5, 525), "C4", "TAXIWAY");
 
-        Node TestGate1 = new Node(TaxiWayNode1, null, null, null, new Vector2(JframeRef.getWidth()/5 * 1 + JframeRef.getWidth()/5, 600), "D1", "Gate");
+        /*Node TestGate1 = new Node(TaxiWayNode1, null, null, null, new Vector2(JframeRef.getWidth()/5 * 1 + JframeRef.getWidth()/5, 600), "D1", "Gate");
         Node TestGate2 = new Node(TaxiWayNode2, null, TestGate1, null, new Vector2(JframeRef.getWidth()/5 * 2 + JframeRef.getWidth()/5, 600), "D2", "Gate");
         Node TestGate3 = new Node(TaxiWayNode3, null, TestGate2, null, new Vector2(JframeRef.getWidth()/5 * 3 + JframeRef.getWidth()/5, 600), "D3", "Gate");
         Node TestGate4 = new Node(TaxiWayNode4, null, TestGate3, null, new Vector2(JframeRef.getWidth()/5 * 4 + JframeRef.getWidth()/5, 600), "D3", "Gate");
-
+*/
         airfieldNode1.setBottomNode(miniRoadNode1);
         airfieldNode1.setRightNode(airfieldNode2);
         airfieldNode2.setBottomNode(miniRoadNode2);
@@ -80,17 +80,17 @@ public class JPanelVisualizer extends JPanel implements ActionListener {
         miniRoadNode3.setRightNode(miniRoadNode4);
         miniRoadNode4.setBottomNode(TaxiWayNode4);
 
-        TaxiWayNode1.setBottomNode(TestGate1);
+        //TaxiWayNode1.setBottomNode(TestGate1);
         TaxiWayNode1.setRightNode(TaxiWayNode2);
-        TaxiWayNode2.setBottomNode(TestGate2);
+        //TaxiWayNode2.setBottomNode(TestGate2);
         TaxiWayNode2.setRightNode(TaxiWayNode3);
-        TaxiWayNode3.setBottomNode(TestGate3);
+        //TaxiWayNode3.setBottomNode(TestGate3);
         TaxiWayNode3.setRightNode(TaxiWayNode4);
-        TaxiWayNode4.setBottomNode(TestGate4);
+        //TaxiWayNode4.setBottomNode(TestGate4);
 
-        TestGate1.setRightNode(TestGate2);
+        /*TestGate1.setRightNode(TestGate2);
         TestGate2.setRightNode(TestGate3);
-        TestGate3.setRightNode(TestGate4);
+        TestGate3.setRightNode(TestGate4);*/
 
         // add to airport nav
         airportNav.add(airfieldNode1);
@@ -125,7 +125,7 @@ public class JPanelVisualizer extends JPanel implements ActionListener {
         outsideLoop.add(rightTopFlyOff);
         outsideLoop.add(rightFlyOff);
 
-        flightPath = airControl.calculateRoute("A4", TestGate1);
+        flightPath = airControl.calculateRoute("A4", TaxiWayNode1);
         ArrayList<Node> flightPath2 = airControl.calculateRoute("A1", TaxiWayNode4);
         
 
