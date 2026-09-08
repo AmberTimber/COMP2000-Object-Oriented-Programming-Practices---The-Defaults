@@ -1,6 +1,5 @@
 
 import java.util.ArrayList;
-import java.util.Vector;
 
 public class Moveable extends Vector2 {
     private float minDist = 0.5f;
@@ -165,7 +164,7 @@ public class Moveable extends Vector2 {
                     setTarget(flightPath.get(NavigationIndex).getPosition().getVector2());
                     currentNode = flightPath.get(NavigationIndex);
                     setReachedTarget(false);
-                    flightPath.get(NavigationIndex).setOccupied(true); // ensure no other aircrafts can go to the node
+                    flightPath.get(NavigationIndex).setOccupied(false); // ensure no other aircrafts can go to the node
                     System.out.println("Going to airfield");
                 }
             }
