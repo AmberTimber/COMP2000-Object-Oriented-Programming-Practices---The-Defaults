@@ -24,7 +24,6 @@ public class JPanelVisualizer extends JPanel implements ActionListener {
     private ArrayList<Node> airportNav = new ArrayList<>();
     private ArrayList<Aircraft> aircraftsOnSite = new ArrayList<>();
     private AirTrafficControl airControl = new AirTrafficControl(aircraftsOnSite,  airportNav,new Vector2(500, 600));
-    private Aircraft testFlight;
     private ArrayList<Node> runway = new ArrayList<>();
     private ArrayList<Node> waitingBay = new ArrayList<>();
     private ArrayList<Node> outsideLoop = new ArrayList<>();
@@ -129,7 +128,7 @@ public class JPanelVisualizer extends JPanel implements ActionListener {
         ArrayList<Node> flightPath2 = airControl.calculateRoute("A1", TaxiWayNode4);
         
 
-        testFlight = new CargoPlane("Test aircraft", "Time the greek", "Hawking404", 30.00, 50,"Fly my minions", 500.00, 250.00);
+        Aircraft testFlight = new CargoPlane("Test aircraft", "Time the greek", "Hawking404", 30.00, 50,"Fly my minions", 500.00, 250.00);
         testFlight.setVector2(JframeRef.getWidth()/9 + (JframeRef.getWidth()/9)/2, 600);
         testFlight.setFlightPath(flightPath);
         aircraftsOnSite.add(testFlight);

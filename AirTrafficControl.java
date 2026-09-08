@@ -153,13 +153,13 @@ public class AirTrafficControl implements drawable {
     // detects if a aircraft is onfield
     public void checkIfAAircraftOnAirfield(ArrayList<Node> airfieldRef, Aircraft otherAircraft) {
         if (aircraftsInAirport != null && !aircraftsInAirport.isEmpty() && airfieldRef != null && !airfieldRef.isEmpty() && otherAircraft != null && flyingAircraft == null) {
-            for (int i = 0; i < aircraftsInAirport.size(); i++) {
+            for (int i = 0; i < airfieldRef.size(); i++) {
                 if (otherAircraft.getCurrentNode() == airfieldRef.get(i)) {
                     OccupiedAirfield = true;
                     AirfieldNodeChanger(airfieldRef);
                     flyingAircraft = otherAircraft;
                     flyingAircraft.setSelected(true);
-                    i = aircraftsInAirport.size();
+                    i = airfieldRef.size();
                 } else {
                     OccupiedAirfield = false;
                 }
@@ -173,6 +173,7 @@ public class AirTrafficControl implements drawable {
             Node aircraftNodeRef = selectedAircraft.getFlightPath().get(selectedAircraft.getFlightPath().size()-1);
             if (selectedAircraft.getFlying() && selectedAircraft.compareVectors(aircraftNodeRef.getPosition())) {
                 if (OccupiedAirfield == false && flyingAircraft == null && flyingAircraft == null) {
+                    selectedAircraft.getCurrentNode().setOccupied(false);
                     flyingAircraft = selectedAircraft;
                     ResetAircraft(flyingAircraft);
                     flyingAircraft.setSelected(true);
