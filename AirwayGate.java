@@ -40,7 +40,7 @@ public class AirwayGate {
     }
 
     public boolean isFree() {
-        return currentPlane == null;
+        return status && currentPlane == null;
     }
 
     public String getGateID() {
