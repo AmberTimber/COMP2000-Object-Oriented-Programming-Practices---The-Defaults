@@ -1,9 +1,6 @@
-import java.util.ArrayList;
-import javax.swing.ImageIcon;
-import javax.swing.ImageIcon;
-import java.awt.Image;
 import java.awt.Color;
 import java.awt.Graphics;
+import java.util.ArrayList;
 
 public class AirTrafficControl implements drawable {
     private static ArrayList<Aircraft> aircraftsInAirport;
@@ -111,8 +108,8 @@ public class AirTrafficControl implements drawable {
     }
     
     // for drawing elements of airtraffic control
+    @Override
     public void visualRepresentation(Graphics drawer, int width, int height) {
-        Image catImage = new ImageIcon("Folder JUMPSCARE/cat.PNG").getImage();
         drawer.setColor(Color.GRAY);
         drawer.fillRect(Location.getXPos(), Location.getYPos(), width, height);
         drawer.setColor(Color.CYAN);
@@ -153,6 +150,7 @@ public class AirTrafficControl implements drawable {
         }
     }
 
+    // detects if a aircraft is onfield
     public void checkIfAAircraftOnAirfield(ArrayList<Node> airfieldRef, Aircraft otherAircraft) {
         if (aircraftsInAirport != null && !aircraftsInAirport.isEmpty() && airfieldRef != null && !airfieldRef.isEmpty() && otherAircraft != null && flyingAircraft == null) {
             for (int i = 0; i < aircraftsInAirport.size(); i++) {
@@ -161,23 +159,40 @@ public class AirTrafficControl implements drawable {
                     AirfieldNodeChanger(airfieldRef);
                     flyingAircraft = otherAircraft;
                     flyingAircraft.setSelected(true);
+                    i = aircraftsInAirport.size();
+                } else {
+                    OccupiedAirfield = false;
                 }
             }
         }
     }
 
-    public void clearForLanding(Aircraft selectedAircraft, Node RUNWAYNode, ArrayList<Node> airfieldRef) {
-        if (airfieldRef != null && !airfieldRef.isEmpty() && selectedAircraft != null && RUNWAYNode != null) {
+    // check if clear for landing
+    public void clearForLanding(Aircraft selectedAircraft, Node RUNWAYNode, ArrayList<Node> airfieldRef, ArrayList<Node> airportNav) {
+        if (airfieldRef != null && !airfieldRef.isEmpty() && selectedAircraft != null && RUNWAYNode != null && airportNav != null && !airportNav.isEmpty()) {
             Node aircraftNodeRef = selectedAircraft.getFlightPath().get(selectedAircraft.getFlightPath().size()-1);
             if (selectedAircraft.getFlying() && selectedAircraft.compareVectors(aircraftNodeRef.getPosition())) {
-                if (OccupiedAirfield == false && flyingAircraft == null) {
+                if (OccupiedAirfield == false && flyingAircraft == null && flyingAircraft == null) {
+                    flyingAircraft = selectedAircraft;
+                    ResetAircraft(flyingAircraft);
+                    flyingAircraft.setSelected(true);
+                    flyingAircraft.setTarget(RUNWAYNode.getPosition());
+                    flyingAircraft.setStatus("GROUNDED");
+                    flyingAircraft.setFlying(false);
+                    flyingAircraft.setFlightPath(airportNav);
                     OccupiedAirfield = true;
                     AirfieldNodeChanger(airfieldRef);
-                    flyingAircraft = selectedAircraft;
-                    flyingAircraft.setSelected(true);
                     System.out.println("attempting to land!");
                 }
             }
+        }
+    }
+
+    // resets flight path of aircraft
+    public void ResetAircraft (Aircraft selectedAircraft) {
+        if (selectedAircraft != null) {
+            selectedAircraft.resetIndex();
+            selectedAircraft.setReachedTarget(false);
         }
     }
 }

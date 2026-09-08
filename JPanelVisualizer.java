@@ -1,11 +1,8 @@
 import java.awt.Color;
 import java.awt.Graphics;
-import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
-
-import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.Timer;
@@ -26,7 +23,7 @@ public class JPanelVisualizer extends JPanel implements ActionListener {
     private ArrayList<Node> flightPath = new ArrayList<>();
     private ArrayList<Node> airportNav = new ArrayList<>();
     private ArrayList<Aircraft> aircraftsOnSite = new ArrayList<>();
-    private AirTrafficControl airControl = new AirTrafficControl(aircraftsOnSite,  airportNav,new Vector2(500, 800));
+    private AirTrafficControl airControl = new AirTrafficControl(aircraftsOnSite,  airportNav,new Vector2(500, 600));
     private Aircraft testFlight;
     private ArrayList<Node> runway = new ArrayList<>();
     private ArrayList<Node> waitingBay = new ArrayList<>();
@@ -199,12 +196,12 @@ public class JPanelVisualizer extends JPanel implements ActionListener {
                 aircraftsOnSite.get(i).MoveThroughFlightPath(1); 
                 if (aircraftsOnSite.get(i).compareVectors(outsideLoop.get(outsideLoop.size()-1).getPosition())) {
                     flightPath = airControl.calculateRoute("C1", runway.get(0));
-                    airControl.clearForLanding(aircraftsOnSite.get(i), runway.get(0), flightPath);
+                    airControl.clearForLanding(aircraftsOnSite.get(i), runway.get(0), runway, flightPath);
                 }
             }
-         else { // if flying
+         else { // otherwise moves towards target
             aircraftsOnSite.get(i).moveTowards(1);
-        }
+            }
         }
             
         
