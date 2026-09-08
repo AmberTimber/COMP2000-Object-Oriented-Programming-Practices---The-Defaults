@@ -34,7 +34,7 @@ public class AirTrafficControl implements drawable {
     }
 
     // find shortest path
-    public ArrayList<Node> shortestPathNode(ArrayList<Node> givenArray) {
+    private ArrayList<Node> shortestPathNode(ArrayList<Node> givenArray) {
         ArrayList<Node> copy = new ArrayList<>(givenArray);
         Node lastNode = null; // used to remove anything beyond the last waypoint
         if (givenArray != null && !givenArray.isEmpty() && copy != null) {
@@ -68,7 +68,7 @@ public class AirTrafficControl implements drawable {
     }
 
     // used to create a navigational arraylist of points on the airport
-        public ArrayList<Node> findNode(String TargetedNode, ArrayList<Node> givenArray, Node startingNode) {
+        private ArrayList<Node> findNode(String TargetedNode, ArrayList<Node> givenArray, Node startingNode) {
         if (givenArray.contains(startingNode)) { // ensure that a node can only be gone on once
             return null;
         }
@@ -99,6 +99,11 @@ public class AirTrafficControl implements drawable {
         }
 
         // used to ensure that a plane doesn't get stuck in a loop
+        if (startingNode.upperNode != null && startingNode.upperNode.upperNode != null && !givenArray.contains(startingNode.upperNode.upperNode)) {
+            givenArray.add(startingNode);
+            return findNode(TargetedNode, givenArray, startingNode.upperNode.upperNode);
+        }
+
         if (startingNode.rightNode != null && startingNode.rightNode.rightNode != null && !givenArray.contains(startingNode.rightNode.rightNode)) {
             givenArray.add(startingNode);
             return findNode(TargetedNode, givenArray, startingNode.rightNode.rightNode);
@@ -120,13 +125,12 @@ public class AirTrafficControl implements drawable {
     public void ClearAircraftForTakeOff(Aircraft selectedAircraft, ArrayList<Node> flightOutside, ArrayList<Node> airfieldRef) {
         if (airfieldRef != null && !airfieldRef.isEmpty() && selectedAircraft != null && flightOutside != null && !flightOutside.isEmpty()) {
             if (selectedAircraft.canFly() == true && selectedAircraft.getChosenToFly()) {
-                selectedAircraft.setReachedTarget(false);
                 System.out.println("Go for takeoff!!!");
+                ResetAircraft(flyingAircraft);
                 OccupiedAirfield = true;
                 AirfieldNodeChanger(airfieldRef);
                 flyingAircraft = selectedAircraft;
                 flyingAircraft.setFlying(true);
-                flyingAircraft.resetIndex();
                 flyingAircraft.setFlightPath(flightOutside);
             }
         }
@@ -194,6 +198,36 @@ public class AirTrafficControl implements drawable {
         if (selectedAircraft != null) {
             selectedAircraft.resetIndex();
             selectedAircraft.setReachedTarget(false);
+        }
+    }
+
+    // check if reached a gate
+    public void PlaneAtGate (Aircraft selectedAircraft, ArrayList<AirwayGate> gateList) {
+        if (selectedAircraft != null && gateList != null && !gateList.isEmpty() && selectedAircraft.checkIfEndOfPath() && !selectedAircraft.getStatus().equalsIgnoreCase("DOCKED")) {
+            for (int i = 0; i < gateList.size(); i++) {
+                if (selectedAircraft.getPosition().compareVectors(gateList.get(i).getGateNode().getPosition()) && gateList.get(i).getStatus() == true) {
+                    try {
+                    selectedAircraft.setDocked(true);
+                    selectedAircraft.setStatus("DOCKED");
+                    selectedAircraft.setCountdown(20); // pretend that people are getting on board + refueling
+                    gateList.get(i).parkPlane(selectedAircraft);
+                    } catch (OccupancyException e) {
+                    System.out.println("Error at gate: " + e.getMessage());
+                    }
+                }
+            }
+        }
+    }
+
+    // used for getting a random location on runway and gate
+    public String getRandomNodeID(ArrayList<Node> nodeSet) {
+        if (nodeSet != null && !nodeSet.isEmpty()) {
+            int numberSelected = (int)(Math.random() * nodeSet.size());
+            Node selectedNode = nodeSet.get(numberSelected);
+            return selectedNode.getNodeID();
+        } else {
+            System.out.println("Cannot get a random node ID. Array is null or is empty");
+            return null;
         }
     }
 }

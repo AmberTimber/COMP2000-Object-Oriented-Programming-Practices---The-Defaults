@@ -38,10 +38,10 @@ public class JPanelVisualizer extends JPanel implements ActionListener {
             int newYpos = (int)(Math.random() * (800 - 1 + 1)) + 1;
             aircrafts[i].setTarget(new Vector2(newXpos, newYpos));
         }*/
-        Node leftFlyOff = new Node(null, null, null, null, new Vector2(-100, 75), "RUNWAY", "Outside");
-        Node leftTopFlyOff = new Node(null, null, null, null, new Vector2(-100, -200), "Outside", "Outside");
-        Node rightTopFlyOff = new Node(null, null, null, null, new Vector2(JframeRef.getWidth() + 200, -200), "Outside", "Outside");
-        Node rightFlyOff = new Node(null, null, null, null, new Vector2(JframeRef.getWidth() + 100, 75), "Outside", "Outside");
+        Node leftFlyOff = new Node(null, null, null, null, new Vector2(-100, 75), "Outside left", "Outside");
+        Node leftTopFlyOff = new Node(null, null, null, null, new Vector2(-100, -200), "Outside top left", "Outside");
+        Node rightTopFlyOff = new Node(null, null, null, null, new Vector2(JframeRef.getWidth() + 200, -200), "Outside top right", "Outside");
+        Node rightFlyOff = new Node(null, null, null, null, new Vector2(JframeRef.getWidth() + 100, 75), "Outside right", "Outside");
         
         Node airfieldNode1 = new Node(null, null, null, null, new Vector2(JframeRef.getWidth()/7 * 0 + (JframeRef.getWidth()/7)/2, 75), "A1", "RUNWAY");
         Node airfieldNode2 = new Node(null, null, airfieldNode1, null, new Vector2(JframeRef.getWidth()/7 * 2 + (JframeRef.getWidth()/7)/2, 75), "A2", "RUNWAY");
@@ -58,11 +58,11 @@ public class JPanelVisualizer extends JPanel implements ActionListener {
         Node TaxiWayNode3 = new Node(miniRoadNode3, null, TaxiWayNode2, null, new Vector2(JframeRef.getWidth()/5 * 2 + JframeRef.getWidth()/5, 525), "C3", "TAXIWAY");
         Node TaxiWayNode4 = new Node(miniRoadNode4, null, TaxiWayNode3, null, new Vector2(JframeRef.getWidth()/5 * 3 + JframeRef.getWidth()/5, 525), "C4", "TAXIWAY");
 
-        /*Node TestGate1 = new Node(TaxiWayNode1, null, null, null, new Vector2(JframeRef.getWidth()/5 * 1 + JframeRef.getWidth()/5, 600), "D1", "Gate");
+        Node TestGate1 = new Node(TaxiWayNode1, null, null, null, new Vector2(JframeRef.getWidth()/5 * 1 + JframeRef.getWidth()/5, 600), "D1", "Gate");
         Node TestGate2 = new Node(TaxiWayNode2, null, TestGate1, null, new Vector2(JframeRef.getWidth()/5 * 2 + JframeRef.getWidth()/5, 600), "D2", "Gate");
         Node TestGate3 = new Node(TaxiWayNode3, null, TestGate2, null, new Vector2(JframeRef.getWidth()/5 * 3 + JframeRef.getWidth()/5, 600), "D3", "Gate");
-        Node TestGate4 = new Node(TaxiWayNode4, null, TestGate3, null, new Vector2(JframeRef.getWidth()/5 * 4 + JframeRef.getWidth()/5, 600), "D3", "Gate");
-*/
+        Node TestGate4 = new Node(TaxiWayNode4, null, TestGate3, null, new Vector2(JframeRef.getWidth()/5 * 4 + JframeRef.getWidth()/5, 600), "D4", "Gate");
+
         airfieldNode1.setBottomNode(miniRoadNode1);
         airfieldNode1.setRightNode(airfieldNode2);
         airfieldNode2.setBottomNode(miniRoadNode2);
@@ -79,17 +79,17 @@ public class JPanelVisualizer extends JPanel implements ActionListener {
         miniRoadNode3.setRightNode(miniRoadNode4);
         miniRoadNode4.setBottomNode(TaxiWayNode4);
 
-        //TaxiWayNode1.setBottomNode(TestGate1);
+        TaxiWayNode1.setBottomNode(TestGate1);
         TaxiWayNode1.setRightNode(TaxiWayNode2);
-        //TaxiWayNode2.setBottomNode(TestGate2);
+        TaxiWayNode2.setBottomNode(TestGate2);
         TaxiWayNode2.setRightNode(TaxiWayNode3);
-        //TaxiWayNode3.setBottomNode(TestGate3);
+        TaxiWayNode3.setBottomNode(TestGate3);
         TaxiWayNode3.setRightNode(TaxiWayNode4);
-        //TaxiWayNode4.setBottomNode(TestGate4);
+        TaxiWayNode4.setBottomNode(TestGate4);
 
-        /*TestGate1.setRightNode(TestGate2);
+        TestGate1.setRightNode(TestGate2);
         TestGate2.setRightNode(TestGate3);
-        TestGate3.setRightNode(TestGate4);*/
+        TestGate3.setRightNode(TestGate4);
 
         // add to airport nav
         airportNav.add(airfieldNode1);
@@ -124,8 +124,19 @@ public class JPanelVisualizer extends JPanel implements ActionListener {
         outsideLoop.add(rightTopFlyOff);
         outsideLoop.add(rightFlyOff);
 
-        flightPath = airControl.calculateRoute("A4", TaxiWayNode1);
-        ArrayList<Node> flightPath2 = airControl.calculateRoute("A1", TaxiWayNode4);
+        // airway gates
+        AirwayGate Gate1 = new AirwayGate("Gate01",true , TestGate1);
+        AirwayGate Gate2 = new AirwayGate("Gate02",true , TestGate2);
+        AirwayGate Gate3 = new AirwayGate("Gate03",true , TestGate3);
+        AirwayGate Gate4 = new AirwayGate("Gate04",true , TestGate4);
+
+        allGates.add(Gate1);
+        allGates.add(Gate2);
+        allGates.add(Gate3);
+        allGates.add(Gate4);
+
+        flightPath = airControl.calculateRoute("A4", TestGate1);
+        ArrayList<Node> flightPath2 = airControl.calculateRoute("A1", TestGate2);
         
 
         Aircraft testFlight = new CargoPlane("Test aircraft", "Time the greek", "Hawking404", 30.00, 50,"Fly my minions", 500.00, 250.00);
@@ -157,49 +168,69 @@ public class JPanelVisualizer extends JPanel implements ActionListener {
         // key note: increase in xPos = more to right, increase in Y makes it go down
 
             for (int i = 0; i < aircraftsOnSite.size(); i++) {
+                Aircraft selectedAircraft = aircraftsOnSite.get(i);
                 // checks if the airfield is clear
                 if (airControl.getOccupiedAirfield() == true) {
                     airControl.checkIfAirfieldIsFree(JframeRef.getWidth(), runway);
-                }
+                } else {
                 airControl.checkIfAAircraftOnAirfield(runway, aircraftsOnSite.get(i));
+                }
+                // checks if aircraft at gate
+                airControl.PlaneAtGate(selectedAircraft, allGates);
                 
                 // checks if plane is flying
-                if (!aircraftsOnSite.get(i).getFlying()) {
-                aircraftsOnSite.get(i).CheckIfNextPathIsBlocked(); // checks if the path is blocked or not
-            if (aircraftsOnSite.get(i).canFly() == true) {
+                if (!selectedAircraft.getFlying()) {
+                selectedAircraft.CheckIfNextPathIsBlocked(); // checks if the path is blocked or not
+            if (selectedAircraft.canFly() == true) {
                 // if plane can fly
-                aircraftsOnSite.get(i).getFlightPath().get(aircraftsOnSite.get(i).getFlightPath().size()-1).setOccupied(false);
-                airControl.ClearAircraftForTakeOff(aircraftsOnSite.get(i), outsideLoop, runway); // changes path to outside route
-            } else if (aircraftsOnSite.get(i).canFly() == false && aircraftsOnSite.get(i).getStatus().equalsIgnoreCase("GROUNDED") && aircraftsOnSite.get(i).isBlocked() == false) {
+                selectedAircraft.getFlightPath().get(selectedAircraft.getFlightPath().size()-1).setOccupied(false);
+                airControl.ClearAircraftForTakeOff(selectedAircraft, outsideLoop, runway); // changes path to outside route
+            } else if (selectedAircraft.canFly() == false && selectedAircraft.getStatus().equalsIgnoreCase("GROUNDED") && selectedAircraft.isBlocked() == false) {
                 // moves through the airport
-                aircraftsOnSite.get(i).MoveThroughFlightPath(1); 
-            } else if(aircraftsOnSite.get(i).isBlocked() == true && aircraftsOnSite.get(i).getChosenToFly() == false && inWaitingBay(aircraftsOnSite.get(i)) == false) { 
+                selectedAircraft.MoveThroughFlightPath(1); 
+            } else if(selectedAircraft.isBlocked() == true && selectedAircraft.getChosenToFly() == false && inWaitingBay(selectedAircraft) == false) { 
                 // if a aircraft path is being blocked
                 Node currentNode = null;
-                for (int c = 0; c < aircraftsOnSite.get(i).getFlightPath().size(); c++) {
-                    if (aircraftsOnSite.get(i).getFlightPath().get(c).getPosition().compareVectors(aircraftsOnSite.get(i).getVector2())) {
-                        currentNode = aircraftsOnSite.get(i).getFlightPath().get(c); // gets its current progress in the navigation
+                for (int c = 0; c < selectedAircraft.getFlightPath().size(); c++) {
+                    if (selectedAircraft.getFlightPath().get(c).getPosition().compareVectors(selectedAircraft.getPosition())) {
+                        currentNode = selectedAircraft.getFlightPath().get(c); // gets its current progress in the navigation
                     }
                 }
-                String NodeID = aircraftsOnSite.get(i).getFlightPath().get(aircraftsOnSite.get(i).getFlightPath().size()-1).getNodeID();
+                String NodeID = selectedAircraft.getFlightPath().get(selectedAircraft.getFlightPath().size()-1).getNodeID();
                 currentNode.setOccupied(false);
                 flightPath = airControl.calculateRoute(NodeID, currentNode);
-                aircraftsOnSite.get(i).setFlightPath(flightPath); // creates new path so it doesn't collide with other aircrafts
-                aircraftsOnSite.get(i).setBlocked(false);
+                selectedAircraft.setFlightPath(flightPath); // creates new path so it doesn't collide with other aircrafts
+                selectedAircraft.setBlocked(false);
                 System.out.println("Changed direction");
-            } else {
-                aircraftsOnSite.get(i).moveTowards(1); // once in flight, moves to target
-            }
-
-        } else if (aircraftsOnSite.get(i).getFlying()) { // flying
-                aircraftsOnSite.get(i).MoveThroughFlightPath(1); 
-                if (aircraftsOnSite.get(i).compareVectors(outsideLoop.get(outsideLoop.size()-1).getPosition())) {
-                    flightPath = airControl.calculateRoute("C1", runway.get(0));
-                    airControl.clearForLanding(aircraftsOnSite.get(i), runway.get(0), runway, flightPath);
+            } else if (selectedAircraft.isAtGate()) {
+                // if aircraft is at gate, it countsdown until 0
+                selectedAircraft.decreaseCountdown();
+                if (selectedAircraft.CooldownOver()) {
+                    AirwayGate currentGate = null;
+                    for (int c = 0; c < allGates.size(); c++) {
+                        if (selectedAircraft.getPosition().compareVectors(allGates.get(c).getGateNode().getPosition()) && allGates.get(c).getStatus() == true) {
+                            currentGate = allGates.get(c);
+                            String selectedNodeID = airControl.getRandomNodeID(runway);
+                            currentGate.departingPlane(airControl, selectedNodeID);
+                            c = allGates.size();
+                        }
+                    }
                 }
             }
-         else { // otherwise moves towards target
-            aircraftsOnSite.get(i).moveTowards(1);
+             else {
+                selectedAircraft.moveTowards(1); // once in flight, moves to target
+            }
+
+        } else if (selectedAircraft.getFlying()) { // flying
+                selectedAircraft.MoveThroughFlightPath(1); 
+                // upon looping, it flies back into the airport
+                if (selectedAircraft.compareVectors(outsideLoop.get(outsideLoop.size()-1).getPosition())) {
+                    flightPath = airControl.calculateRoute("D1", runway.get(0));
+                    airControl.clearForLanding(selectedAircraft, runway.get(0), runway, flightPath);
+                }
+            }
+            else { // otherwise moves towards target
+            selectedAircraft.moveTowards(1);
             }
         }
             
@@ -259,11 +290,13 @@ public class JPanelVisualizer extends JPanel implements ActionListener {
     }
 
     private boolean inWaitingBay(Aircraft selectedAircraft) {
+        if (selectedAircraft != null) {
         for (int i = 0; i < waitingBay.size(); i++) {
             if (selectedAircraft.getCurrentNode().getNodeTileRepresentation().equals("WAITINGBAY")) {
                 return true;
             }
         }
+    }
         return false;
     }
 }

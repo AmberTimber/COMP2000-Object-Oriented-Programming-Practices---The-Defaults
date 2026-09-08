@@ -6,6 +6,8 @@ public interface  Position {
     void setXPos(int xPos);
     void setYPos(int yPos);
 
+    Vector2 getPosition();
+
 
     default String returnVector2() {
         return (" This Xposition is: " + getXPos() + " . This Yposition is: " + getYPos());

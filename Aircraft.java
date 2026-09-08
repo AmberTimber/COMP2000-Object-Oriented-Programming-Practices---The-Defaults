@@ -1,3 +1,5 @@
+import java.util.ArrayList;
+
 public abstract class Aircraft extends Moveable {
     private final String aircraftID;
     private String operator;
@@ -6,6 +8,7 @@ public abstract class Aircraft extends Moveable {
     private final int capacity;
     private String status;
     private boolean flying = false;
+    private int countdown = 0;
 
 
     public Aircraft(String aircraftID, String operator, String model, double fuelLevel, int capacity, String status) {
@@ -41,6 +44,10 @@ public abstract class Aircraft extends Moveable {
         flying = value;
     }
 
+    public void setCountdown (int value) {
+        countdown = value;
+    }
+
     //getters
     public String getAircraftID() {
         return aircraftID;
@@ -66,6 +73,14 @@ public abstract class Aircraft extends Moveable {
         return flying;
     }
 
+    public boolean CooldownOver() {
+        if (countdown < 0) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     public String getStatus() {
         if(status.equals("GOUNDED")){
             System.out.println("Status: " + aircraftID + " is grounded.");
@@ -87,7 +102,7 @@ public abstract class Aircraft extends Moveable {
     }
 
     public boolean canFly() {
-        if (getReachedTarget() == true && getVector2().compareVectors(getFlightPath().get(getFlightPath().size()-1).getPosition()) == true) {
+        if (getReachedTarget() == true && getPosition().compareVectors(getFlightPath().get(getFlightPath().size()-1).getPosition()) == true) {
             Node lastNodeRef = getFlightPath().get(getFlightPath().size()-1);
             if (lastNodeRef.getNodeTileRepresentation().equalsIgnoreCase("RUNWAY")) {
                 setStatus("Flying");
@@ -95,5 +110,12 @@ public abstract class Aircraft extends Moveable {
             }
         }
         return false;
+    }
+
+    // used as a countdown before a plane leaves gate or flies off airfield
+    public void decreaseCountdown() {
+        if (countdown > 0 && isAtGate() || countdown > 0 && getChosenToFly()) {
+            countdown--;
+        }
     }
 }

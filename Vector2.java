@@ -11,7 +11,7 @@ public class Vector2 implements Position {
         this.yPos = yPos;
     }
 
-    public Vector2 getVector2() {
+    public Vector2 getPosition() {
         return new Vector2(xPos, yPos);
     }
 

@@ -1,3 +1,5 @@
+import java.util.ArrayList;
+
 public class AirwayGate {
 
     private final String gateID;
@@ -72,6 +74,22 @@ public class AirwayGate {
             System.out.println("Plane at gate: " + currentPlane.getAircraftID());
         } else {
             System.out.println("No plane currently at the gate.");
+        }
+    }
+
+    //below is Tim's silly works
+    public void departingPlane(AirTrafficControl airController, String locationNode) {
+        // if plane is docked and timer has reached 0
+        if (currentPlane != null && currentPlane.getStatus().equalsIgnoreCase("DOCKED") && currentPlane.CooldownOver() && locationNode != null && !locationNode.isEmpty()) {
+            try {
+            ArrayList<Node> path =airController.calculateRoute(locationNode, gateNode);
+            currentPlane.setFlightPath(path);
+            removePlane();
+            } catch (NullPointerException e) {
+                System.out.println("Null pointer exception happened while leaving the gate!:" + e);
+            } catch (Exception e) {
+                System.out.println("An error occured while leaving gate: " + e);
+            }
         }
     }
 }
