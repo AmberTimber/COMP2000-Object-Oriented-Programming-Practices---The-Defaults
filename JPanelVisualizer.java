@@ -139,12 +139,12 @@ public class JPanelVisualizer extends JPanel implements ActionListener {
         ArrayList<Node> flightPath2 = airControl.calculateRoute("A1", TestGate2);
         
 
-        Aircraft testFlight = new CargoPlane("Test aircraft", "Time the greek", "Hawking404", 30.00, 50,"Fly my minions", 500.00, 250.00);
+        Aircraft testFlight = new CargoPlane("Test aircraft", "Time the greek", "Hawking404", 1500.00, 50,"Fly my minions", 500.00, 250.00);
         testFlight.setVector2(JframeRef.getWidth()/9 + (JframeRef.getWidth()/9)/2, 600);
         testFlight.setFlightPath(flightPath);
         aircraftsOnSite.add(testFlight);
 
-        Aircraft testFlight2 = new CargoPlane("Test aircraft2", "Albert Minestein", "Blimper64", 30.00, 50,"Gravity Finder", 500.00, 250.00);
+        Aircraft testFlight2 = new CommercialPlane("Test aircraft2", "Albert Minestein", "Blimper64", 1300.00, 50,"Gravity Finder", 500, 250);
         testFlight2.setVector2(TaxiWayNode4.getXPos()-100, TaxiWayNode4.getYPos());
         testFlight2.setFlightPath(flightPath2);
         aircraftsOnSite.add(testFlight2);
@@ -310,7 +310,10 @@ public class JPanelVisualizer extends JPanel implements ActionListener {
         if (selectedAircraft != null) {
         for (int i = 0; i < waitingBay.size(); i++) {
             if (selectedAircraft.getCurrentNode().getNodeTileRepresentation().equals("WAITINGBAY")) {
+                waitingBay.get(i).setOccupied(true);
                 return true;
+            } else {
+                waitingBay.get(i).setOccupied(false);
             }
         }
     }
