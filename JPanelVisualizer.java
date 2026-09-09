@@ -191,6 +191,8 @@ public class JPanelVisualizer extends JPanel implements ActionListener {
                         selectedNode.setOccupied(false);
                     }
                 }
+
+                selectedAircraft.influenceFuel();
                 
                 // checks if plane is flying
                 if (!selectedAircraft.getFlying()) {
@@ -226,7 +228,7 @@ public class JPanelVisualizer extends JPanel implements ActionListener {
                 if (selectedAircraft.CooldownOver()) {
                     AirwayGate currentGate = null;
                     for (int c = 0; c < allGates.size(); c++) {
-                        if (selectedAircraft.getPosition().compareVectors(allGates.get(c).getGateNode().getPosition()) && allGates.get(c).getStatus() == true) {
+                        if (selectedAircraft.getCurrentNode().getPosition().compareVectors(allGates.get(c).getGateNode().getPosition()) && allGates.get(c).getStatus() == true) {
                             currentGate = allGates.get(c);
                             String selectedNodeID = airControl.getRandomNodeID(runway);
                             currentGate.departingPlane(airControl, selectedNodeID);
@@ -245,7 +247,7 @@ public class JPanelVisualizer extends JPanel implements ActionListener {
                 if (selectedAircraft.compareVectors(outsideLoop.get(outsideLoop.size()-1).getPosition())) {
                     ArrayList<Node> gateNodes = new ArrayList<>();
                     for (int c = 0; c < allGates.size(); c++) {
-                        if (allGates.get(i).isFree()) {
+                        if (allGates.get(c).isFree()) {
                          gateNodes.add(allGates.get(c).getGateNode());
                         }
                     }

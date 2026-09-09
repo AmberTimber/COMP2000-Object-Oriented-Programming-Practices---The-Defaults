@@ -109,6 +109,7 @@ public class AirTrafficControl implements drawable {
             return findNode(TargetedNode, givenArray, startingNode.rightNode.rightNode);
         }
         
+        System.out.println("Returned null in path!");
         return null; // after checking that all other slots are null, meaning this branch isn't it
     }
     

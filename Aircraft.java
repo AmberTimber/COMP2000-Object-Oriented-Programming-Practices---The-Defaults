@@ -8,6 +8,8 @@ public abstract class Aircraft extends Moveable implements drawable {
     private String status;
     private boolean flying = false;
     private int countdown = 0;
+    private int framesToConsumeFuel = 200;
+    private int MaxframesToConsumeFuel = framesToConsumeFuel;
 
 
     public Aircraft(String aircraftID, String operator, String model, double fuelLevel, int capacity, String status) {
@@ -123,6 +125,25 @@ public abstract class Aircraft extends Moveable implements drawable {
         if (countdown <= 0 && canFly()) {
             countdown = 200;
             System.out.println("Preparing for takeoff");
+        }
+    }
+
+    //Consumes fuel
+    public void influenceFuel() {
+        if (!getStatus().equalsIgnoreCase("DOCKED")) {
+            if (framesToConsumeFuel <= 0) {
+                fuelLevel--;
+                framesToConsumeFuel = MaxframesToConsumeFuel;
+            } else {
+                framesToConsumeFuel--;
+            }
+        } else if (getStatus().equalsIgnoreCase("DOCKED")) {
+            if (framesToConsumeFuel <= MaxframesToConsumeFuel-10) {
+                fuelLevel++;
+                framesToConsumeFuel = MaxframesToConsumeFuel;
+            } else {
+                framesToConsumeFuel--;
+            }
         }
     }
 }
