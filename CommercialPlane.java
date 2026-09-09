@@ -1,3 +1,6 @@
+import java.awt.Color;
+import java.awt.Graphics;
+
 public class CommercialPlane extends Aircraft implements flyable {
     private final int numSeats;
     private int currentPassengers;
@@ -69,5 +72,11 @@ public class CommercialPlane extends Aircraft implements flyable {
         } else {
             return false;
         }
+    }
+
+    @Override
+    public void visualRepresentation(Graphics drawer, int width, int height) {
+        drawer.setColor(Color.YELLOW);
+        drawer.fillOval(getXPos(), getYPos(), 50, 50);
     }
 }

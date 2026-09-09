@@ -1,6 +1,8 @@
+import java.awt.Color;
+import java.awt.Graphics;
 import java.util.ArrayList;
 
-public class AirwayGate {
+public class AirwayGate implements drawable {
 
     private final String gateID;
     private boolean status;
@@ -82,8 +84,10 @@ public class AirwayGate {
         // if plane is docked and timer has reached 0
         if (currentPlane != null && currentPlane.getStatus().equalsIgnoreCase("DOCKED") && currentPlane.CooldownOver() && locationNode != null && !locationNode.isEmpty()) {
             try {
-            ArrayList<Node> path =airController.calculateRoute(locationNode, gateNode);
+            ArrayList<Node> path = airController.calculateRoute(locationNode, gateNode);
             currentPlane.setFlightPath(path);
+            currentPlane.setStatus("GROUNDED");
+            currentPlane.setDocked(false);
             removePlane();
             } catch (NullPointerException e) {
                 System.out.println("Null pointer exception happened while leaving the gate!:" + e);
@@ -91,5 +95,12 @@ public class AirwayGate {
                 System.out.println("An error occured while leaving gate: " + e);
             }
         }
+    }
+
+    // for drawing elements of gate
+    @Override
+    public void visualRepresentation(Graphics drawer, int width, int height) {
+        drawer.setColor(Color.GREEN);
+        drawer.fillRect(getGateNode().getXPos(), getGateNode().getYPos(), width, height);
     }
 }

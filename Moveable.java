@@ -70,8 +70,13 @@ public class Moveable extends Vector2 {
 
     public void setFlightPath(ArrayList<Node> givenPath) { // set path for things to move to
         if (givenPath != null && !givenPath.isEmpty()) {
+            if (flightPath != null && !flightPath.isEmpty()) {
+                flightPath.get(NavigationIndex).setOccupied(false);
+            }
+        resetIndex();
         currentNode = givenPath.get(NavigationIndex);
         flightPath = givenPath;
+        setTarget(flightPath.get(NavigationIndex).getPosition());
         } else {
             System.out.println("Null array or empty array given as flight path!!!!");
         }
@@ -115,8 +120,6 @@ public class Moveable extends Vector2 {
     public void checkIfReachTarget() {
         if (checkReachXAxis() == true && checkReachYAxis() == true || this.getXPos() == target.getXPos() && this.getYPos() == target.getYPos()) {
             reachTarget = true;
-            //System.out.println("Reached pos!");
-            //changeTarget();
         }
     }
 
@@ -151,16 +154,15 @@ public class Moveable extends Vector2 {
         int newXpos = (int)(Math.random() * (1000 - 1 + 1)) + 1;
         int newYpos = (int)(Math.random() * (800 - 1 + 1)) + 1;
         target = new Vector2(newXpos, newYpos);
-        //System.out.println("New pos is: " + newXpos + " x value, " + newYpos + " y value.");
         reachTarget = false;
     }
 
     public void MoveThroughFlightPath(int speed) { // moves through given node movement
         if (flightPath != null && !flightPath.isEmpty()) {
             if (flightPath.size() > NavigationIndex) {
-                setTarget(flightPath.get(NavigationIndex).getPosition());
                 moveTowards(speed);
                 checkIfReachTarget();
+                flightPath.get(NavigationIndex).setOccupied(true);
     
                 if (getReachedTarget() == true && flightPath.size() > NavigationIndex + 1 && flightPath.get(NavigationIndex +1).getOccupied() == false) {
                     flightPath.get(NavigationIndex).setOccupied(false); // frees up node for other aircrafts to go to
@@ -174,6 +176,7 @@ public class Moveable extends Vector2 {
                     CheckIfNextPathIsBlocked();
                 } // if the aircraft is selected to go on airfield
                 else if (getReachedTarget() == true && flightPath.size() > NavigationIndex + 1 && selected == true) {
+                    flightPath.get(NavigationIndex).setOccupied(false);
                     NavigationIndex++;
                     setTarget(flightPath.get(NavigationIndex).getPosition());
                     currentNode = flightPath.get(NavigationIndex);

@@ -1,5 +1,5 @@
 
-public abstract class Aircraft extends Moveable {
+public abstract class Aircraft extends Moveable implements drawable {
     private final String aircraftID;
     private String operator;
     private String model;
@@ -113,8 +113,16 @@ public abstract class Aircraft extends Moveable {
 
     // used as a countdown before a plane leaves gate or flies off airfield
     public void decreaseCountdown() {
-        if (countdown > 0 && isAtGate() || countdown > 0 && getChosenToFly()) {
+        if (countdown >= 0 && isAtGate() || countdown > 0 && getChosenToFly()) {
             countdown--;
+        }
+    }
+
+    // allows plane to stay in on airfield for a second before flying away
+    public void warmUpEngines() {
+        if (countdown <= 0 && canFly()) {
+            countdown = 200;
+            System.out.println("Preparing for takeoff");
         }
     }
 }

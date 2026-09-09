@@ -58,10 +58,10 @@ public class JPanelVisualizer extends JPanel implements ActionListener {
         Node TaxiWayNode3 = new Node(miniRoadNode3, null, TaxiWayNode2, null, new Vector2(JframeRef.getWidth()/5 * 2 + JframeRef.getWidth()/5, 525), "C3", "TAXIWAY");
         Node TaxiWayNode4 = new Node(miniRoadNode4, null, TaxiWayNode3, null, new Vector2(JframeRef.getWidth()/5 * 3 + JframeRef.getWidth()/5, 525), "C4", "TAXIWAY");
 
-        Node TestGate1 = new Node(TaxiWayNode1, null, null, null, new Vector2(JframeRef.getWidth()/5 * 1 + JframeRef.getWidth()/5, 600), "D1", "Gate");
-        Node TestGate2 = new Node(TaxiWayNode2, null, TestGate1, null, new Vector2(JframeRef.getWidth()/5 * 2 + JframeRef.getWidth()/5, 600), "D2", "Gate");
-        Node TestGate3 = new Node(TaxiWayNode3, null, TestGate2, null, new Vector2(JframeRef.getWidth()/5 * 3 + JframeRef.getWidth()/5, 600), "D3", "Gate");
-        Node TestGate4 = new Node(TaxiWayNode4, null, TestGate3, null, new Vector2(JframeRef.getWidth()/5 * 4 + JframeRef.getWidth()/5, 600), "D4", "Gate");
+        Node TestGate1 = new Node(TaxiWayNode1, null, null, null, new Vector2(JframeRef.getWidth()/9 * 1, 600), "D1", "Gate");
+        Node TestGate2 = new Node(TaxiWayNode2, null, TestGate1, null, new Vector2(JframeRef.getWidth()/9 * 3, 600), "D2", "Gate");
+        Node TestGate3 = new Node(TaxiWayNode3, null, TestGate2, null, new Vector2(JframeRef.getWidth()/9 * 5, 600), "D3", "Gate");
+        Node TestGate4 = new Node(TaxiWayNode4, null, TestGate3, null, new Vector2(JframeRef.getWidth()/9 * 7, 600), "D4", "Gate");
 
         airfieldNode1.setBottomNode(miniRoadNode1);
         airfieldNode1.setRightNode(airfieldNode2);
@@ -181,11 +181,14 @@ public class JPanelVisualizer extends JPanel implements ActionListener {
                     selectedAircraft.decreaseCountdown();
                     if (selectedAircraft.CooldownOver()) {
                         Node selectedNode = selectedAircraft.getCurrentNode();
-                        selectedAircraft.setFlightPath(null);
+                        AirwayGate dockedGate = null;
+                        for (int c = 0; c < allGates.size(); c++) {
+                            if (allGates.get(c).getGateNode().getPosition().compareVectors(selectedAircraft.getPosition())) {
+                                dockedGate = allGates.get(c);
+                            }
+                        }
+                        dockedGate.departingPlane(airControl, "A4");
                         selectedNode.setOccupied(false);
-                        selectedAircraft.resetIndex();
-                        flightPath = airControl.calculateRoute("A4", selectedNode);
-                        selectedAircraft.setFlightPath(flightPath);
                     }
                 }
                 
@@ -193,14 +196,18 @@ public class JPanelVisualizer extends JPanel implements ActionListener {
                 if (!selectedAircraft.getFlying()) {
                 selectedAircraft.CheckIfNextPathIsBlocked(); // checks if the path is blocked or not
             if (selectedAircraft.canFly() == true) {
-                // if plane can fly
+                // if plane can fly, then it starts to fly
                 selectedAircraft.getFlightPath().get(selectedAircraft.getFlightPath().size()-1).setOccupied(false);
-                airControl.ClearAircraftForTakeOff(selectedAircraft, outsideLoop, runway); // changes path to outside route
+                selectedAircraft.warmUpEngines();
+                selectedAircraft.decreaseCountdown();
+                if (selectedAircraft.CooldownOver()) {
+                    airControl.ClearAircraftForTakeOff(selectedAircraft, outsideLoop, runway); // changes path to outside route
+                }
             } else if (selectedAircraft.canFly() == false && selectedAircraft.getStatus().equalsIgnoreCase("GROUNDED") && selectedAircraft.isBlocked() == false) {
                 // moves through the airport
                 selectedAircraft.MoveThroughFlightPath(1); 
             } else if(selectedAircraft.isBlocked() == true && selectedAircraft.getChosenToFly() == false && inWaitingBay(selectedAircraft) == false) { 
-                // if a aircraft path is being blocked
+                // if a aircraft path is being blocked, it regenerates a new path
                 Node currentNode = null;
                 for (int c = 0; c < selectedAircraft.getFlightPath().size(); c++) {
                     if (selectedAircraft.getFlightPath().get(c).getPosition().compareVectors(selectedAircraft.getPosition())) {
@@ -236,7 +243,14 @@ public class JPanelVisualizer extends JPanel implements ActionListener {
                 selectedAircraft.MoveThroughFlightPath(1); 
                 // upon looping, it flies back into the airport
                 if (selectedAircraft.compareVectors(outsideLoop.get(outsideLoop.size()-1).getPosition())) {
-                    flightPath = airControl.calculateRoute("D1", runway.get(0));
+                    ArrayList<Node> gateNodes = new ArrayList<>();
+                    for (int c = 0; c < allGates.size(); c++) {
+                        if (allGates.get(i).isFree()) {
+                         gateNodes.add(allGates.get(c).getGateNode());
+                        }
+                    }
+                    String selectedGate = airControl.getRandomNodeID(gateNodes);
+                    flightPath = airControl.calculateRoute(selectedGate, runway.get(0));
                     airControl.clearForLanding(selectedAircraft, runway.get(0), runway, flightPath);
                 }
             }
@@ -275,28 +289,18 @@ public class JPanelVisualizer extends JPanel implements ActionListener {
             }
         }
         // making gates
-        g.setColor(Color.GREEN);
-        for (int i = 0; i < 10; i++) {
-            if (i%2 == 0) {
-                g.fillRect(JframeRef.getWidth()/9 * i, 600, JframeRef.getWidth()/9 , 200);
-            }
+        for (int i = 0; i < allGates.size(); i++) {
+            allGates.get(i).visualRepresentation(g, JframeRef.getWidth()/9 , 200);
+            // g.fillRect(JframeRef.getWidth()/9 * i, 600, JframeRef.getWidth()/9 , 200);
         }
         // Making terminal
         g.setColor(Color.BLUE);
         g.fillRect(0, 800, JframeRef.getWidth(), 200);
         // air traffic control
         airControl.visualRepresentation(g, 50,50);
-        //g.drawImage(catImage, JframeRef.getWidth()/2, JframeRef.getHeight() - 300, 150, 150, this);
-        // draw plane line
-        /*for (int i = 0; i < aircrafts.length; i++) {
-            g.setColor(Color.YELLOW);
-            g.fillOval(aircrafts[i].getXPos(), aircrafts[i].getYPos(), 50, 50);
-            g.setColor(Color.BLACK);
-            g.drawString("This is plane " + aircrafts[i].getAircraftID(), aircrafts[i].getXPos(), aircrafts[i].getYPos());
-        }*/
+        // visualize planes
        for (int i = 0; i < aircraftsOnSite.size(); i++) {
-        g.setColor(Color.YELLOW);
-        g.fillOval(aircraftsOnSite.get(i).getXPos(), aircraftsOnSite.get(i).getYPos(), 50, 50);
+        aircraftsOnSite.get(i).visualRepresentation(g, 0, 0);
        }
     }
 

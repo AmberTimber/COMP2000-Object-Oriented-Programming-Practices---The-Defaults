@@ -42,7 +42,7 @@ public class AirTrafficControl implements drawable {
             for (int i = 0; i < givenArray.size(); i++) { // starting node to check if future nodes are neighbors
                 int furtherProgression = 0; // used to compare which node is further down
                 for (int c = i; c < givenArray.size(); c++) {
-                    if (copy.get(i).checkIfNeighboring(givenArray.get(c)) && copy.get(i).getOccupied() == false) { // detects whether a neighboring node has a vector2
+                    if (copy.get(i).checkIfNeighboring(givenArray.get(c)) && copy.get(i).getOccupied() == false || givenArray.get(i) == givenArray.get(givenArray.size()-1)) { // detects whether a neighboring node has a vector2
                         if (furtherProgression <= c && (i+1) < givenArray.size()) {
                             copy.set(i + 1, givenArray.get(c));
                             furtherProgression = c;
@@ -164,8 +164,6 @@ public class AirTrafficControl implements drawable {
                     flyingAircraft = otherAircraft;
                     flyingAircraft.setSelected(true);
                     i = airfieldRef.size();
-                } else {
-                    OccupiedAirfield = false;
                 }
             }
         }
@@ -209,7 +207,8 @@ public class AirTrafficControl implements drawable {
                     try {
                     selectedAircraft.setDocked(true);
                     selectedAircraft.setStatus("DOCKED");
-                    selectedAircraft.setCountdown(20); // pretend that people are getting on board + refueling
+                    int cooldown = (int)(Math.random() * (1000 - 300 + 1)) + 300;
+                    selectedAircraft.setCountdown(cooldown); // pretend that people are getting on board + refueling
                     gateList.get(i).parkPlane(selectedAircraft);
                     } catch (OccupancyException e) {
                     System.out.println("Error at gate: " + e.getMessage());

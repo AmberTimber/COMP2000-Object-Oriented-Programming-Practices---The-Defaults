@@ -1,3 +1,6 @@
+import java.awt.Color;
+import java.awt.Graphics;
+
 public class CargoPlane extends Aircraft implements flyable {
     private final double maxWeight; // in KG
     private double currentWeight;
@@ -71,5 +74,18 @@ public class CargoPlane extends Aircraft implements flyable {
         } else {
             return false;
         }
+    }
+
+    @Override
+    public void visualRepresentation(Graphics drawer, int width, int height) {
+        drawer.setColor(Color.RED);
+        drawer.fillOval(getXPos(), getYPos(), 50, 50);
+        drawer.setColor(Color.black);
+        drawer.drawString("CargoPlane " + this.getAircraftID(), xPos + 5, yPos - 20);
+        drawer.drawString("Operator " + this.getOperator(), xPos + 5, yPos - 5);
+        drawer.drawString("Model " + this.getModel(), xPos + 5, yPos + 10);
+        drawer.drawString("Fuel Level: " + this.getFuelLevel(), xPos + 5, yPos + 25);
+        drawer.drawString("Capacity: " + this.getCapacity(), xPos + 5, yPos + 40);
+        drawer.drawString("Current status: " + this.getStatus(), xPos + 5, yPos + 55);
     }
 }
