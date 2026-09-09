@@ -1,4 +1,3 @@
-import java.util.ArrayList;
 
 public abstract class Aircraft extends Moveable {
     private final String aircraftID;
@@ -74,7 +73,7 @@ public abstract class Aircraft extends Moveable {
     }
 
     public boolean CooldownOver() {
-        if (countdown < 0) {
+        if (countdown <= 0) {
             return true;
         } else {
             return false;

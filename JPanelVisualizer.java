@@ -177,6 +177,17 @@ public class JPanelVisualizer extends JPanel implements ActionListener {
                 }
                 // checks if aircraft at gate
                 airControl.PlaneAtGate(selectedAircraft, allGates);
+                if (selectedAircraft.getStatus().equalsIgnoreCase("DOCKED")) {
+                    selectedAircraft.decreaseCountdown();
+                    if (selectedAircraft.CooldownOver()) {
+                        Node selectedNode = selectedAircraft.getCurrentNode();
+                        selectedAircraft.setFlightPath(null);
+                        selectedNode.setOccupied(false);
+                        selectedAircraft.resetIndex();
+                        flightPath = airControl.calculateRoute("A4", selectedNode);
+                        selectedAircraft.setFlightPath(flightPath);
+                    }
+                }
                 
                 // checks if plane is flying
                 if (!selectedAircraft.getFlying()) {
